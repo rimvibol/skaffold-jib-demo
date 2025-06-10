@@ -1,0 +1,60 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.2.3'
+	id 'io.spring.dependency-management' version '1.1.4'
+	id 'com.google.cloud.tools.jib' version '3.4.0'
+}
+
+group = 'com.vibol'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	sourceCompatibility = '21'
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+bootJar {
+	enabled = true
+}
+
+jar {
+	enabled = true
+}
+
+jib {
+	from {
+		image = 'eclipse-temurin:21-jre-alpine'
+	}
+	to {
+		image = 'docker.io/vibolrim290/skaffold-jib-demo'
+		tags = ['latest']
+	}
+	container {
+		mainClass = 'com.vibol.skaffold_jib_demo.SkaffoldJibDemoApplication'
+		ports = ['8080']
+	}
+}
